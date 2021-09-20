@@ -1,11 +1,9 @@
 import CategoriaService from '../services/CategoriaService';
 
 class CategoriaController {
-
-  /* Metodos */
   static data(req, res) {
-    Promise.all([CategoriaService.getAll(req.params.page, req.params.num)])
-      .then(([result]) => {
+    CategoriaService.getAll(req.params.page, req.params.num)
+      .then((result) => {
         res.status(200).send({ result })
       })
       .catch(reason => {

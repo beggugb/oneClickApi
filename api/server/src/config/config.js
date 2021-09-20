@@ -7,26 +7,26 @@ module.exports = {
   // },
 
   development: {
-    database: "click",
+    database: "1clicknew",
     username: "postgres",
     password: "ileana2020",
-    host: "127.0.0.1",
+    host: "192.168.0.250",
     dialect: "postgres",
   },
 
   test: {
-    database: "click",
+    database: "1clicknew",
     username: "postgres",
     password: "ileana2020",
-    host: "127.0.0.1",
+    host: "192.168.0.250",
     dialect: "postgres",
   },
 
   production: {
-    database: "click",
+    database: "1clicknew",
     username: "postgres",
     password: "ileana2020",
-    host: "127.0.0.1",
+    host: "192.168.0.250",
     dialect: "postgres",
   },
 };

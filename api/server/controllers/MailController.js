@@ -2,7 +2,7 @@ import model from "../src/models";
 import nodeMailer from "nodemailer";
 
 import EmpresaService from "../services/EmpresaService";
-
+import UbicacionesService from "../services/UbicacionesService";
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const path = require("path");
@@ -20,13 +20,18 @@ class MailController {
   
   static sendMail(tipo, user, fecha) {
     return new Promise((resolve, reject) => {      
-      Promise.all([EmpresaService.getEmpresa(1)]).then(([empresa]) => {
-        Promise.all([enviar(tipo, empresa, user, fecha)]).then(([mail]) => {          
-         /*console.log(tipo)
-          console.log(empresa)
-          console.log(user)
-          console.log(fecha)*/          
-          resolve(mail);
+      Promise.all([EmpresaService.getEmpresa(1)])
+	 .then(([empresa]) => {
+		 
+	  const iok = {}
+		iok.latitude = parseFloat(user.latitude)
+                iok.longitude = parseFloat(user.longitude)
+		iok.usuarioId = user.usuarioId	 
+        Promise.all([UbicacionesService.add(iok),
+		enviar(tipo, empresa, user, fecha),
+	])
+	    .then(([mail]) => {          
+             resolve(mail);
         });
       });
     });
@@ -111,9 +116,10 @@ function aprobacion(user,hostname,fecha){
 
 function panico(user){  
   let fecha = new Date()
+  let Mfecha = (new Date(fecha + 'UTC')).toISOString().replace(/-/g, '-').split('T')[0]
   let template =`<body><h2>Hola ${user.refnombre} ,</h2>            
                 <p>Posiblemente el la persona ${user.nombre} , necesita mandar su ubicación para mantenerlo informado. </p>
-                <p>Hora: ${fecha}  </p>
+                <p>Hora: ${Mfecha}  </p>
                 <p> 
                 <a href="https://www.google.com/maps/place/${user.latitude},${user.longitude}">Ultimo punto</a>         
                 </p>

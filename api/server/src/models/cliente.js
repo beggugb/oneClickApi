@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     celular: DataTypes.STRING,
     email: DataTypes.STRING,
     web: DataTypes.STRING,    
+    likes: DataTypes.INTEGER,	  
+    views: DataTypes.INTEGER,	  
     filename: {
       type: DataTypes.STRING,
       defaultValue: "filename.jpg"

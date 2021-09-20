@@ -20,18 +20,23 @@ const bcrypt = require("bcrypt-nodejs");
 class ClienteController {
 
   static marcar(req, res) {            
-    Promise.all([FavoritoService.add(req.body)])                
-      .then(([clientes]) => {
-           res.status(200).send({ result: clientes });
-        })                     
+    const { usuarioId, clienteId } = req.body	  
+    Promise.all([FavoritoService.add(req.body), ClienteService.getIds(clienteId)])                
+      .then(([clientes,cliente]) => {
+	  let iok = {}
+	     iok.likes = parseInt(cliente.likes) + 1   
+         ClienteService.updt(iok,clienteId)
+	      .then(([clientes,cliente]) => {
+	         res.status(200).send({ result: clientes });
+         })
+      })
       .catch((reason) => {
 	  console.log(reason)    
         res.status(400).send({ reason });
       });   
   }
 
-  static desmarcar(req, res) {            
-console.log(req.params.id)	  
+  static desmarcar(req, res) {
     Promise.all([FavoritoService.delete(req.params.id)])                
       .then(([clientes]) => {
            res.status(200).send({ result: clientes });
@@ -308,13 +313,11 @@ console.log(req.params.id)
       }
 
       static consulta(req, res) {   
-        console.log(req.params.estado)         
         Promise.all([
           ClienteService.consulta(req.params.page,req.params.num,req.params.categoria,req.params.nombre),
           FavoritoService.getAllUsuario(req.params.estado)
         ])
             .then(([clientes, favoritos]) => {   
-              console.log(favoritos)		    
               const dato = unir(clientes.data, favoritos)   
               res.status(200).send({ message: "lista", result: {paginas: clientes.paginas,pagina:clientes.pagina,total:clientes.total,data:dato }});
             })
@@ -383,9 +386,11 @@ console.log(req.params.id)
 
         static getIte(req, res) {        
           if (req.params.id) {
-            Promise.all([ ClienteService.getId(req.params.id) ])
-              .then(([cliente]) => {                              
-                  Promise.all([SucursalService.getAlls(cliente.id)])
+            Promise.all([ ClienteService.getId(req.params.id),ClienteService.getIds(req.params.id)])
+              .then(([cliente, clt]) => {                              
+		  let iok = {}
+                      iok.views = parseInt(clt.views) + 1    
+                  Promise.all([SucursalService.getAlls(cliente.id),ClienteService.updt(iok,req.params.id)])
                     .then(([sucursales]) => {                                
                        res.status(200).send({ message: "cliente", cliente:  cliente, sucursales: sucursales });
                       })
@@ -444,6 +449,8 @@ console.log(req.params.id)
           tem.celular = item.celular
           tem.hinicio = item.Horarios.hinicio
           tem.hfin = item.Horarios.hfin
+	  tem.views = item.views
+	  tem.likes = item.likes	
           data2.map((ite) =>{
           /* console.log(ite.clienteId)
            console.log(item.id)		  */

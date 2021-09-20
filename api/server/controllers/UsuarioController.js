@@ -80,6 +80,7 @@ class UsuarioController {
 
   static sendPanico(req, res) {    
     const { nombre, refemail  } = req.body        
+	  console.log(req.body)
     let fecha = new Date()
     if (refemail && nombre) {      
       Promise.all([MailController.sendMail("panico",req.body,fecha)])                   
@@ -87,6 +88,7 @@ class UsuarioController {
           res.status(200).send({ message: "user", result: user });
         })
         .catch((reason) => {
+           console.log(reason)		
           res.status(400).send({ message: reason });
         });
     } else {
@@ -118,9 +120,28 @@ class UsuarioController {
   }
 
  static getItems(req, res) { 
-    Promise.all([UsuarioService.getIds(req.params.id)])
-      .then(([user]) => {
-        res.status(200).send({ message: "user", result: user });
+    UsuarioService.getIds(req.params.id)
+      .then((user) => {
+	 if(user){
+         /*  console.log(user)		 
+	   console.log('-----')	 */
+           res.status(200).send({ message: "user", result: user }); 	
+	 }else{
+	   let iok = {}
+	       iok.usuarioId = req.params.id	 
+           UsuarioService.add(iok)
+              .then((usert) => {
+	         UsuarioService.getIds(req.params.id)
+		   .then((useru) => {
+			 /*console.log(useru)  
+			 console.log('*****')  */
+			res.status(200).send({ message: "user", result: useru });
+	           })  
+
+              })
+          }   
+        /*console.log(user)
+	res.status(200).send({ message: "user", result: user });*/
       })
       .catch((reason) => {
         res.status(400).send({ message: reason });

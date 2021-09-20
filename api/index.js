@@ -9,7 +9,7 @@ import compression from "compression";
 import fs from "fs";
 import shell from "shelljs";
 
-var hostname = "157.245.89.246";
+var hostname = "192.168.0.100";
 var port = 4000;
 var app = express();
 var server = http.createServer(app);
@@ -27,10 +27,10 @@ routes(app);
 
 app.get("*", (req, res) =>
   res.status(200).send({
-    message: "Api C2",
+    message: "Api 1Click",
   })
 );
 
 server.listen(port, hostname, () => {
-  console.log(`Server MLM is runing ar http://${hostname}:${port}/`);
+  console.log(`Server 1Click is runing ar http://${hostname}:${port}/`);
 });

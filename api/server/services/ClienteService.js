@@ -203,6 +203,17 @@ class ClienteService {
     });
   }
 
+  static getIds(clienteId) {
+    return new Promise((resolve, reject) => {
+      Cliente.findByPk(clienteId,{
+       attributes: ["id", "likes","views"]
+      })
+        .then((cliente) => resolve(cliente))
+        .catch((reason) => reject(reason));
+    });
+  }
+	
+
   static getIdSingle(clienteId) {
     return new Promise((resolve, reject) => {
       const dia = new Date()  
@@ -320,7 +331,7 @@ class ClienteService {
           ]
         },
         /*attributes: ["id","nombres","filename","portada","username","direccion","telefono","estado","descripcion","hestado","habilitado","registrado","paqueteId","hinicio","hfin","celular"],        */
-        attributes: ["id","nombres","filename","direccion","telefono","descripcion","paqueteId","celular"],        
+        attributes: ["id","likes","views","nombres","filename","direccion","telefono","descripcion","paqueteId","celular"],        
         include: [{ 
           model: Horario,           
           attributes: ["id", "dia","hinicio","hfin","clienteId"],           
@@ -377,10 +388,10 @@ class ClienteService {
         offset: der,
         limit: num,          
         where: { usuarioId: usuarioId },
-        attributes: ["usuarioId"],
+        attributes: ["usuarioId",['id','fid']],
         include: [{
           model: Cliente,
-          attributes: ["id","nombres","filename","direccion","telefono","descripcion","paqueteId","celular"],
+          attributes: ["id","nombres","filename","direccion","telefono","descripcion","paqueteId","celular","likes","views"],
         }]
       })
         .then((clientes) =>
@@ -410,6 +421,24 @@ class ClienteService {
    })
   
    }
+
+   static getFavoritosu(usuarioId) {
+    return new Promise((resolve, reject) => {
+      Favorito.findAll({
+        where: { usuarioId: usuarioId },
+        attributes: ["usuarioId"],
+        include: [{
+          model: Cliente,
+          attributes: ["id","nombres","filename","paqueteId"],
+        }]
+      })
+        .then((clientes) =>
+        resolve({ clientes })
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+	
   
 }
 
