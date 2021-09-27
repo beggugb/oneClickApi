@@ -264,7 +264,9 @@ class ClienteService {
         hfin,
         video,
         direccion,
-        descripcion
+        descripcion,
+	tipo,
+	icon
       } = dato;
       let newpassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
       Cliente.update(
@@ -289,7 +291,9 @@ class ClienteService {
           hfin: hfin,
           video: video,
           direccion: direccion,
-          descripcion: descripcion
+          descripcion: descripcion,
+	  tipo: tipo,
+		icon: icon
         },
         { where: { id: Number(datoId) } }
       )
@@ -369,8 +373,8 @@ class ClienteService {
           "telefono",
           "celular",
           "tipo",
-          "icon"          
-        ],
+          "icon",
+         "filename"        ],
       })
         .then((clientes) =>
           resolve(clientes)

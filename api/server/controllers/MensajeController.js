@@ -1,102 +1,63 @@
-import model from '../src/models'
-import nodeMailer from 'nodemailer'
+import UsuarioService from "../services/UsuarioService";
+import { Expo } from 'expo-server-sdk';
+const expo = new Expo();
+import fetch from 'node-fetch';
 
-import pdfPedido from '../../documents/pedido'
+class MensajeController { 
 
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
-const path = require('path');
-const pdf = require('html-pdf');
-const hostname = 'localhost'
-const port = 4000
-const { Mensaje } = model;
-
-class MensajesController{	
-	/*Metodos
-  * getMensajesUsuario(page,num)
-  * sendPedido(compraId,email)
-	*/
-		
-	/* Interfaces */
-  static sendMailVerificacion(token,user) {          
-    return new Promise((resolve, reject) => {           
-           Promise.all([ sVerificacion(user,token)])
-            .then(([mail]) =>{              
-              resolve(mail) 
-          })           
-    })
+	
+static sendMessajeUnit(req, res) {   
+  const { usuarioId, mensaje } = req.body              
+    UsuarioService.getId(usuarioId) 
+      .then((cliente) => {        
+	  console.log(cliente.token)    
+        let tick = sendMensaje(mensaje, cliente.token)
+	/*sendToken()      */
+        res.status(200).send({ result: tick });
+      })        
+      .catch((reason) => {                  
+	console.log(reason)      
+        res.status(400).send({ reason });
+      });  
   }
+};
 
+async function sendToken (){
+  let api = "ONnlhp_xS5WvgCBhcc0LmA=="	
+  let mensaje = 'https://www.google.com/maps/place/-17.7974534,-63.2030157'	
+  const response = await fetch(`https://platform.clickatell.com/messages/http/send?apiKey=ONnlhp_xS5WvgCBhcc0LmA==&to=59175600278&content=${mensaje}`, {method: 'GET'});
+  	
 }
 
-function sVerificacion(user,token) {
-  return new Promise((resolve, reject) => {    
-   let transporter = nodeMailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, 
-      auth:{
-        user: 'beggugb@gmail.com',
-        pass: 'ileana800'
-
-      }
-    });
-
-    let mailOptions = {
-      to: user.email,
-      subject: `Orden de Compra N° ${user.nombres}`,      
-      html:`<body><h3>Orden de Compra N° ${user.id}</h3>
-      <p>Solicitamos los productos descritos en el archivo adjunto</p>
-      <p>Quedamos atentos a su respuesta</p>
-      <p></p>
-      <p><b>Email:</b>info@beguu.com</p>
-      <p><b>Web:</b>info@beguu.com</p>
-      </body>`,      
-      attachments: [
-        {   
-            filename: 'compra.pdf',
-            path: `${process.cwd()}/api/documents/pedido.pdf`
-        }]   
-    };
-
-    transporter.sendMail(mailOptions, (error, info) =>{
-      if(error){
-
-        resolve({mail:'error'})
-      }      
-        resolve({mail:'ok'})
-        
-    });
-  })
-}
-
-
-function createPdfPedido(item, items) {      
-  let img = `http://${hostname}:${port}/api/static/images/empresa/md/logoin.png`;   
-    pdf.create(pdfPedido(item,items,img), {}).toFile(`${process.cwd()}/api/documents/pedido.pdf`, (err) => {
-      if(err) {      
-      return err
-      }       
-      return 0
-      }   
-    ) 
-}
-
-function getAllMensajes(id, page, num) {
-  return new Promise((resolve, reject) => {        
-    let der = (num * page) - num;    
-   Mensaje
-   .findAndCountAll({
-    raw:true,
-      nest:true,
-        offset: der,                
-        limit: num,         
-        order:  [['id', 'DESC'],],            
-        where: { usuarioId: Number(id) }
+function sendMensaje(mensaje, token)
+{
+  let tieckRes = {}
+  let messages = [];  
+  messages.push({
+        /*to:  "ExponentPushToken[bGIfs1F0uGvHtBaY8_gSCQ]",*/
+        to: token,
+        sound: 'default',
+        title:'Notificación',
+        body: "`Binenvenidos a 1Click ` 😎",
+        /*body: mensaje,*/
+        data: { withSome: 'goes here' },
       })
-    .then(mensajes =>
-        resolve({'paginas':(Math.ceil(mensajes.count/num)),'pagina':page,'total':mensajes.count,'data': mensajes.rows }))   
-  })    
+ let chunks = expo.chunkPushNotifications(messages); 
+  (async () => {      
+    for (let chunk of chunks) {
+      try {
+        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+        console.log('---------------------');
+        console.log(ticketChunk);
+        console.log('---------------------');
+        tieckRes = ticketChunk
+      } catch (error) {
+        console.error(error);
+      }
+    }    
+  })();	
+
+  return tieckRes
 }
 
-export default MensajesController;
+export default MensajeController;

@@ -11,5 +11,6 @@ router.post("/panico", UsuarioController.sendPanico);
 router.put("/:id", UsuarioController.update);
 router.post('/actualizar', UsuarioController.actualizar);
 router.get("/actualizar/:id", UsuarioController.getItems);
+router.post('/mobil/login', UsuarioController.mobilLogin);
 export default router;
 

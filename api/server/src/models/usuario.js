@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,    
     reftelefono: DataTypes.STRING,
     refnombre: DataTypes.STRING,
-    refemail: DataTypes.STRING   
+    refemail: DataTypes.STRING,
+    token: DataTypes.STRING,	  
   }, {});
 
   Usuario.beforeSave((user, options) => {  

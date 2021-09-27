@@ -169,6 +169,42 @@ class UsuarioController {
           });
       }
 
+   static mobilLogin(req, res) {
+    const { usuarioId } = req.body;
+	console.log(usuarioId)   
+    Promise.all([UsuarioService.getIds(usuarioId)])
+      .then(([usuario]) => {
+	/**********************************************************/
+	if(usuario){
+           Promise.all([UsuarioService.update(req.body,usuario.id)])
+            .then(([usuari]) => {
+              Promise.all([UsuarioService.getIds(usuarioId)])
+                 .then(([usuario]) => {
+                    res.status(200).send({ usuario });
+               })
+             })
+            .catch((reason) => {
+              console.log(reason)
+              res.status(400).send({ message: reason });
+             });
+           }else{
+             Promise.all([UsuarioService.adds(req.body)])
+            .then(([usuario]) => {
+              res.status(200).send({ usuario });
+             })
+            .catch((reason) => {
+              console.log(reason)
+              res.status(400).send({ message: reason });
+             });
+           }
+	/***********************************************************/      
+      })
+      .catch((reason) => {
+        res.status(400).send({ message: reason });
+      });
+  }
+	
+
 
 }
 

@@ -8,7 +8,7 @@ import contratoRoutes from './ContratoRoutes'
 import consultasRoutes from './ConsultasRoutes'
 import usuarioRoutes from './UsuarioRoutes'
 import ubicacionRoutes from './UbicacionesRoutes'
-
+import mensajesRoutes from './MensajesRoutes'
 export default (app) => {
 	app.use('/api/clientes', clienteRoutes);
 	app.use('/api/categorias', categoriaRoutes);
@@ -21,5 +21,6 @@ export default (app) => {
 	app.use('/api/consultas', consultasRoutes);
 	app.use('/api/usuarios', usuarioRoutes);	
 	app.use('/api/ubicaciones', ubicacionRoutes)	
+	app.use('/api/mensajes',mensajesRoutes)
 
 }

@@ -303,6 +303,7 @@ class ClienteController {
       }
 
       static actualizar(req, res) {
+	      console.log(req.body)
         Promise.all([ClienteService.update(req.body, req.params.id)])
           .then(([cliente]) => {
             res.status(200).send({ message: "cliente", result: cliente });
@@ -413,6 +414,7 @@ class ClienteController {
           tem.title = item.nombres,
           tem.description = item.descripcion,
           tem.tipo = item.tipo,    
+			tem.filename = item.filename,
           tem.icon = item.icon,
           tem.telefono = item.telefono,
           tem.celular = item.celular,
@@ -426,6 +428,7 @@ class ClienteController {
           tem.title = item.nombre,    
           tem.tipo = item.tipo,    
           tem.icon = item.icon,
+	  tem.filename = item.filename,		
           tem.description = "",
           tem.telefono = item.telefono,
           tem.celular = item.celular,

@@ -73,7 +73,10 @@ class UsuarioService {
           "email",
           "telefono",          
           "refnombre",
-          "refemail"
+          "refemail",
+          "reftelefono",
+          "usuarioId",
+          "token"		
         ],
       })
         .then((usuario) => resolve(usuario))
@@ -82,10 +85,11 @@ class UsuarioService {
   }
 
   static getIds(usId) {
-	  console.log(usId)
     return new Promise((resolve, reject) => {
       Usuario.findOne({
-         where: { usuarioId: usId},   
+        raw: true,
+        nest: true,
+	where: { usuarioId: usId},   	      
          attributes: [
           "id",
 	  "usuarioId",	 
@@ -94,7 +98,8 @@ class UsuarioService {
           "telefono",
           "refnombre",
           "refemail",
-	  "reftelefono"
+	  "reftelefono",
+          "token"
         ],
       })
         .then((usuario) => resolve(usuario))
@@ -146,6 +151,17 @@ class UsuarioService {
       
    });
   }
+
+  static adds(newUsuario) {
+    return new Promise((resolve, reject) => {
+     Usuario.create(newUsuario)
+        .then((usuario) => 
+            resolve(usuario))
+        .catch((reason) => reject(reason));
+    })
+  }
+
+	
 
   static validarUsuario(usern) {
     console.log(usern)      
