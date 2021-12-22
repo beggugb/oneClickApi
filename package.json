@@ -39,6 +39,7 @@
     "sharp": "^0.25.3",
     "shelljs": "^0.8.4",
     "socket.io": "^2.3.0",
+    "sort-array": "^4.1.4",
     "uuid": "^8.1.0"
   },
   "devDependencies": {

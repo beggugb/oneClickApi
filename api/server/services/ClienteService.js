@@ -10,6 +10,332 @@ const { Cliente, Rol, Categoria, Paquete, Horario, Favorito } = database;
 
 class ClienteService {
 
+  static search(page, num, nombres) {
+    return new Promise((resolve, reject) => {
+      let der = (num * page) - num;
+      let iName = '%' + nombres + '%'
+      if (nombres === '0' || nombres === 0 || nombres === undefined || nombres === null || nombres === '') { iName = '%' }
+      Cliente.findAndCountAll({
+        offset: 0,
+        raw: true,
+        nest: true,
+        limit: 12,
+        where: {
+          [Op.and]: [
+            { nombres: { [Op.iLike]: iName } },
+            { rolId: { [Op.eq]: 1 } }
+          ]
+        },        
+        attributes: ["id","nombres","direccion","email","coordenadas","habilitado","telefono" ]
+      })
+        .then((clientes) =>
+          resolve({
+            paginas: Math.ceil(clientes.count / num),
+            pagina: page,
+            total: clientes.count,
+            data: clientes.rows,
+          })
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static getMapas(tipo) {
+    return new Promise((resolve, reject) => {      
+      Cliente.findAll({                
+        where: { tipo: { [Op.eq]: tipo } },
+        attributes: [
+          "id",
+          "nombres",          
+          "latitude",
+          "longitude",
+          "descripcion",
+          "direccion",          
+          "telefono",
+          "celular",
+          "tipo",
+          "icon",
+         "filename"        ],
+      })
+        .then((clientes) =>
+          resolve(clientes)
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static item(clienteId) {
+    return new Promise((resolve, reject) => {
+      const dia = new Date()  
+      const dd = dia.getDay()
+      Cliente.findByPk(clienteId,{        
+        include: [
+        { model: Categoria, attributes: ["id", "nombre"] },
+        { model: Paquete, attributes: ["id", "nombre"] },        
+      ]
+      })
+        .then((cliente) => resolve(cliente))
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static getSearch(page,num,categoria,nombres) {
+    return new Promise((resolve, reject) => {           
+      const dia = new Date()  
+      const dd = dia.getDay()
+      let icategoria = parseInt(categoria);
+      let fcategoria = parseInt(categoria);	    
+      let der = (num * page) - num;      
+      if (categoria === 0 || categoria === null || categoria === '0' || categoria === 1 || categoria === '1') 
+	    { fcategoria = 100	}	        
+      let iName = '%' + nombres + '%'
+      if (nombres === 0 || nombres === null || nombres === '0') { iName = '%' }
+      
+      Cliente.findAndCountAll({
+        raw: true,
+        nest: true,
+	      offset: der,
+        limit: num,    
+        order: [["nombres", "ASC"]],  
+        where: {
+          [Op.and]: [            
+            { rolId: { [Op.eq]: 1 } },    
+            { habilitado: { [Op.eq]: true } },                       
+            { categoriaId: {[Op.between]: [icategoria, fcategoria ]}},
+            { tags: { [Op.iLike]: iName } }
+          ]
+        },        
+        attributes: ["id","likes","views","nombres","filename","direccion","telefono","descripcion","paqueteId","celular","latitude","longitude"],        
+        include: [{ 
+          model: Horario,           
+          attributes: ["id", "dia","hinicio","hfin","clienteId"],           
+          where :  {
+            [Op.and]: [                
+                { dia: {[Op.eq]: dd }}
+            ]
+          }
+        }]     
+
+      })
+        .then((clientes) =>
+          resolve({
+            paginas: Math.ceil(clientes.count / num),
+            pagina: parseInt(page),
+            total: clientes.count,
+            data: clientes.rows,
+          })
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
+
+  static getConsulta(page,num,categoria,orden) {
+    return new Promise((resolve, reject) => {     
+      
+      const dia = new Date()  
+      const dd = dia.getDay()
+      let icategoria = parseInt(categoria);
+      let fcategoria = parseInt(categoria);	    
+      let der = (num * page) - num;
+      
+      if (categoria === 0 || categoria === null || categoria === '0' || categoria === 1 || categoria === '1') 
+	    { fcategoria = 100	}	                
+      Cliente.findAndCountAll({
+        raw: true,
+        nest: true,
+	      offset: der,
+        limit: num,    
+        order: [["nombres", "ASC"]],  
+        where: {
+          [Op.and]: [            
+            { rolId: { [Op.eq]: 1 } },    
+            { habilitado: { [Op.eq]: true } },                       
+            { categoriaId: {[Op.between]: [icategoria, fcategoria ]}}
+          ]
+        },        
+        attributes: ["id","likes","views","nombres","filename","direccion","telefono","descripcion","paqueteId","celular","latitude","longitude"],        
+        include: [{ 
+          model: Horario,           
+          attributes: ["id", "dia","hinicio","hfin","clienteId"],           
+          where :  {
+            [Op.and]: [                
+                { dia: {[Op.eq]: dd }}
+            ]
+          }
+        }]     
+
+      })
+        .then((clientes) =>
+          resolve({
+            paginas: Math.ceil(clientes.count / num),
+            pagina: parseInt(page),
+            total: clientes.count,
+            data: clientes.rows,
+          })
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static getData(pag,num,prop,orden) {
+    return new Promise((resolve, reject) => {
+      let page = parseInt(pag);
+      let der = num * page - num;
+      Cliente.findAndCountAll({
+        raw: true,
+        nest: true,
+        offset: der,
+        limit: num,
+        order: [[prop, orden]],   
+        where: { rolId: { [Op.eq]: 1 } },
+        attributes: ["id","nombres","direccion","email","coordenadas","habilitado","telefono"],
+        include: [
+                    { model: Categoria, attributes: ["id", "nombre"]},
+                    { model: Paquete, attributes: ["id", "nombre"]}
+                 ]
+      })
+        .then((clientes) =>
+          resolve({
+            paginas: Math.ceil(clientes.count / num),
+            pagina: page,
+            total: clientes.count,
+            data: clientes.rows,
+          })
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static updt(dato, datoId) {
+    return new Promise((resolve, reject) => {
+      Cliente.update(dato, { where: { id: Number(datoId) } })
+        .then((cliente) => resolve(cliente))
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static getId(clienteId) {
+    return new Promise((resolve, reject) => {
+      const dia = new Date()  
+      const dd = dia.getDay()
+      Cliente.findByPk(clienteId,{        
+        include: [
+        { model: Categoria, attributes: ["id", "nombre"] },
+        { model: Paquete, attributes: ["id", "nombre"] },        
+      ]
+      })
+        .then((cliente) => resolve(cliente))
+        .catch((reason) => reject(reason));
+    });
+  }
+
+  static login(username, password) {
+    return new Promise((resolve, reject) => {
+      Cliente.findOne({
+        where: { username: { [Op.eq]: username } },
+        include: [{ model: Rol, attributes: ["id", "nombre"] }],
+        attributes: ["id", "nombres", "username", "rolId", "password"],
+      }).then((user) => {
+        if (!user) {
+          resolve({
+            success: false,
+            message: "Authentication fallida . Usuario no existe.",
+            user: null,
+          });
+        } else {
+          user.comparePassword(password, (err, isMatch) => {
+            if (isMatch && !err) {
+              let payload = { user_id: user.id, username: user.username };
+              let token = jwt.sign(payload, "click2020", {
+                expiresIn: "2629746000",
+              });
+              resolve({
+                auth: true,
+                message: "Acceso correcto",
+                user: user,
+                token: token,
+              });
+            } else {
+              resolve({
+                success: false,
+                message: "Autenticación fallida. contraseña incorrecta.",
+                user: null,
+              });
+            }
+          });
+        }
+      });
+    });
+  }
+
+  static update(dato, datoId) {    
+
+	  return new Promise((resolve, reject) => {
+      const {
+        nombres,
+        telefono,
+        email,
+        username,
+        password,
+        estado,
+        categoriaId,
+        paqueteId,
+        registrado,
+        emergencia,
+        longitude,
+        latitude,
+        facebook,
+        instagram,
+        tags,
+        tiktok,
+        web,
+        celular,
+        hinicio,
+        hfin,
+        video,
+        direccion,
+        descripcion,
+	tipo,
+	icon
+      } = dato;
+      let newpassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+      Cliente.update(
+        {
+          nombres: nombres,
+          telefono: telefono,
+          email: email,
+          username: username,
+          password: newpassword,
+          estado: estado,
+          categoriaId: categoriaId,
+          paqueteId: paqueteId,
+          registrado: registrado,
+          emergencia: emergencia,
+          web: web,
+          celular: celular,
+          latitude: latitude,
+          longitude: longitude,
+          facebook: facebook,
+          instagram: instagram,
+          tags: tags,
+          tiktok: tiktok,
+          hinicio: hinicio,
+          hfin: hfin,
+          video: video,
+          direccion: direccion,
+          descripcion: descripcion,
+	  tipo: tipo,
+		icon: icon
+        },
+        { where: { id: Number(datoId) } }
+      )
+        .then((cliente) => resolve(cliente))
+        .catch((reason) => reject(reason));
+    });
+  }
+
+/*
   static validarCliente(newUsuario) {    
     if(newUsuario.nombres){
         if(newUsuario.username){
@@ -45,34 +371,7 @@ class ClienteService {
    });
   } 
 
-  static getAll(pag,num,prop,orden) {
-    return new Promise((resolve, reject) => {
-      let page = parseInt(pag);
-      let der = num * page - num;
-      Cliente.findAndCountAll({
-        raw: true,
-        nest: true,
-        offset: der,
-        limit: num,
-        order: [[prop, orden]],   
-        where: { rolId: { [Op.eq]: 1 } },
-        attributes: ["id","nombres","direccion","email","coordenadas","habilitado","telefono"],
-        include: [
-                    { model: Categoria, attributes: ["id", "nombre"]},
-                    { model: Paquete, attributes: ["id", "nombre"]}
-                 ]
-      })
-        .then((clientes) =>
-          resolve({
-            paginas: Math.ceil(clientes.count / num),
-            pagina: page,
-            total: clientes.count,
-            data: clientes.rows,
-          })
-        )
-        .catch((reason) => reject(reason));
-    });
-  }
+ 
 
   static verificarEnlace(cliente) {    
     return new Promise((resolve, reject) => {
@@ -331,11 +630,11 @@ class ClienteService {
             { rolId: { [Op.eq]: 1 } },    
             { habilitado: { [Op.eq]: true } },                       
             { categoriaId: {[Op.between]: [icategoria, fcategoria ]}},
-            { nombres: { [Op.iLike]: iName } }                        
+            { tags: { [Op.iLike]: iName } }                        
           ]
         },
-        /*attributes: ["id","nombres","filename","portada","username","direccion","telefono","estado","descripcion","hestado","habilitado","registrado","paqueteId","hinicio","hfin","celular"],        */
-        attributes: ["id","likes","views","nombres","filename","direccion","telefono","descripcion","paqueteId","celular"],        
+        /*attributes: ["id","nombres","filename","portada","username","direccion","telefono","estado","descripcion","hestado","habilitado","registrado","paqueteId","hinicio","hfin","celular"],        
+        attributes: ["id","likes","views","nombres","filename","direccion","telefono","descripcion","paqueteId","celular","latitude","longitude"],        
         include: [{ 
           model: Horario,           
           attributes: ["id", "dia","hinicio","hfin","clienteId"],           
@@ -442,7 +741,7 @@ class ClienteService {
         .catch((reason) => reject(reason));
     });
   }
-	
+	*/
   
 }
 

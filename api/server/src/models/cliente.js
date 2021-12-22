@@ -7,7 +7,9 @@ module.exports = (sequelize, DataTypes) => {
     telefono: DataTypes.STRING,
     celular: DataTypes.STRING,
     email: DataTypes.STRING,
-    web: DataTypes.STRING,    
+    web: DataTypes.STRING, 
+    tags: DataTypes.STRING,   
+    tiktok: DataTypes.STRING, 
     likes: DataTypes.INTEGER,	  
     views: DataTypes.INTEGER,	  
     filename: {
@@ -34,7 +36,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 5
     },
-    paqueteId: DataTypes.INTEGER,    
+    paqueteId: DataTypes.INTEGER,  
+    likes: DataTypes.INTEGER, 
+    views: DataTypes.INTEGER,   
     facebook: DataTypes.STRING,
     instagram: DataTypes.STRING,
     tipo: DataTypes.STRING,

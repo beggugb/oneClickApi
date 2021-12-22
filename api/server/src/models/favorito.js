@@ -1,7 +1,11 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Favorito = sequelize.define('Favorito', {    
-    usuarioId: DataTypes.STRING,
+    cargo: DataTypes.STRING,
+    requisitos: DataTypes.STRING,
+    caracteristicas: DataTypes.STRING,
+    tipo: DataTypes.STRING,
+    fvencimiento: DataTypes.DATE,
     clienteId: {
       type: DataTypes.INTEGER,
       references: {

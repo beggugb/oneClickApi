@@ -4,35 +4,32 @@ import ClienteController from "../controllers/ClienteController";
 
 const router = Router();
 
-router.post("/registrar", ClienteController.registro);
-router.get("/venlace/:enlace", ClienteController.venlace);
+/*router.post("/registrar", ClienteController.registro);
+router.get("/venlace/:enlace", ClienteController.venlace);*/
 router.post("/login", ClienteController.login);
+
 
 /* Enlaces Protegidos */
-router.get("/vusername/:username", ClienteController.vusername);
 router.get("/lista/:page/:num/:prop/:orden", ClienteController.lista);
-router.get("/search/:nombres", ClienteController.search);
-router.delete("/:id", ClienteController.deleteCliente);
 router.get("/:id", ClienteController.getItem);
 router.put("/:id", ClienteController.actualizar);
+router.get("/search/:nombres", ClienteController.search);
+/*router.get("/vusername/:username", ClienteController.vusername);
+
+router.delete("/:id", ClienteController.deleteCliente);
+router.get("/:id", ClienteController.getItem);
 router.post("/", ClienteController.add);
 router.get("/totales/items",ClienteController.totales);
+router.get("/sucursales/mapas/:id", ClienteController.getSucursales);*/
 
 
-/*
-router.post("/login", ClienteController.login);
-router.post("/registrar", ClienteController.registrarCliente);
-router.get("/verificarConfirmacion/:enlace", ClienteController.regConfirmacion);
-router.put("/:id", ClienteController.actualizar);
-router.post('/restore/password/user', ClienteController.restore)
-router.put('/change/password/:id', ClienteController.restorePassword)
-
-/*Enlaces protegidos
-router.post("/", ClienteController.add);
-router.get("/lista/:page/:num", ClienteController.lista);
-router.delete("/:id", ClienteController.deleteCliente);
-router.post("/aprobar", ClienteController.aprobarCliente);
-router.get("/:id", ClienteController.getItem);
-router.post("/search", ClienteController.search);*/
+/*router.get('/data/:page/:num/:prop/:orden', ClienteController.getData);
+router.get('/list/:prop/:value', ClienteController.getList);
+router.get('/item/:id', ClienteController.getItem);
+router.get('/items/:prop/:value', ClienteController.getItems);
+router.put('/:id/:tipo', ClienteController.setUpdate);
+router.delete('/:id/:tipo', ClienteController.getDelete);
+router.post('/:tipo', ClienteController.setAdd);
+router.post('/search/lista', ClienteController.getSearch);*/
 
 export default router;

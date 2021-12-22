@@ -6,6 +6,29 @@ const Op = Sequelize.Op;
 const { Sucursal, Horario } = database;
 
 class SucursalService {
+
+  static getMapasCliente(clienteId) {
+    return new Promise((resolve, reject) => {      
+      Sucursal.findAll({                
+        where: { clienteId: { [Op.eq]: clienteId }},
+        attributes: [
+          "id",
+          "nombre",          
+          "latitude",
+          "longitude",
+          "direccion",          
+          "telefono",
+          "celular",
+          "tipo",
+          "icon"          
+        ],
+      })
+        .then((clientes) =>
+          resolve(clientes)
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
   
   static getMapas(tipo) {
     return new Promise((resolve, reject) => {      
