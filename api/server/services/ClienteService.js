@@ -10,6 +10,22 @@ const { Cliente, Rol, Categoria, Paquete, Horario, Favorito } = database;
 
 class ClienteService {
 
+  static getBancos() {
+    return new Promise((resolve, reject) => {       
+      Cliente.findAll({
+        raw: true,
+        nest: true,	      
+        order: [["nombres", "ASC"]],  
+        where: {categoriaId: 20},        
+        attributes: ["id","nombres","filename"],        
+       })
+        .then((clientes) =>
+          resolve(clientes)
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
   static search(page, num, nombres) {
     return new Promise((resolve, reject) => {
       let der = (num * page) - num;
@@ -40,6 +56,34 @@ class ClienteService {
     });
   }
 
+  static getMapasCajero(tipo,id) {
+    return new Promise((resolve, reject) => {      
+      Cliente.findAll({                        
+        where: {
+          [Op.and]: [
+            { tipo: { [Op.eq]: tipo }},
+            { id: { [Op.eq]: id } }
+          ]
+        }, 
+        attributes: [
+          "id",
+          "nombres",          
+          "latitude",
+          "longitude",
+          "descripcion",
+          "direccion",          
+          "telefono",
+          "celular",
+          "tipo",
+          "icon",
+         "filename"        ],
+      })
+        .then((clientes) =>
+          resolve(clientes)
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
   static getMapas(tipo) {
     return new Promise((resolve, reject) => {      
       Cliente.findAll({                

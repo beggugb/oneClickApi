@@ -30,10 +30,39 @@ class SucursalService {
     });
   }
   
+  static getMapasCajero(tipo,id) {
+    return new Promise((resolve, reject) => {      
+      Sucursal.findAll({                        
+        where: {
+          [Op.and]: [
+            { tipo: { [Op.eq]: tipo }},
+            { clienteId: { [Op.eq]: id } }
+          ]
+        },
+        attributes: [
+          "id",
+          "nombre",          
+          "latitude",
+          "longitude",
+          "direccion",          
+          "telefono",
+          "celular",
+          "tipo",
+          "icon"          
+        ],
+      })
+        .then((clientes) =>
+          resolve(clientes)
+        )
+        .catch((reason) => reject(reason));
+    });
+  }
+
   static getMapas(tipo) {
     return new Promise((resolve, reject) => {      
       Sucursal.findAll({                
         where: { tipo: { [Op.eq]: tipo } },
+       
         attributes: [
           "id",
           "nombre",          

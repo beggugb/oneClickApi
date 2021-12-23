@@ -133,7 +133,7 @@ class ConsultaController {
     }
 
     static getCajeros(req, res) {
-      Promise.all([ClienteService.getMapas('cajero'),SucursalService.getMapas('cajero')])
+      Promise.all([ClienteService.getMapasCajero('cajero',req.params.id),SucursalService.getMapasCajero('cajero',req.params.id)])
         .then(([clientes, sucursales]) => {
           const data = refactorizar(clientes, sucursales)
           res.status(200).send({ message: "lista", result: data });
@@ -142,7 +142,18 @@ class ConsultaController {
           res.status(400).send({ message: reason });
         });
     
-      }
+    }
+    static getBancos(req, res) {
+      ClienteService.getBancos()
+        .then((clientes) => {          
+          res.status(200).send({ message: "lista", result: clientes });
+        })
+        .catch((reason) => {
+          console.log(reason)
+          res.status(400).send({ message: reason });
+        });
+    
+    }
 
      
 }     

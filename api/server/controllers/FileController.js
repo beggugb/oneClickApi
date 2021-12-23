@@ -41,6 +41,27 @@ class FileController {
 
   }
 
+  static uploadd(req, res) {
+    Promise.all([FileService.puploadd(req, res)])
+      .then(([file]) => {
+        console.log(file)
+        const art = {}
+        art.portada = file.filename
+        Promise.all([ClienteService.updt(art, req.params.id)])
+          .then(([libro]) => {
+            Promise.all([ClienteService.getId(req.params.id)])
+              .then(([result]) => {
+                res.status(200).send({ result })
+              })
+          })
+      })
+      .catch(reason => {
+        console.log(reason)
+        res.status(400).send({ 'message': reason })
+      })
+
+  }
+
   static banner(req, res) {
     Promise.all([FileService.banner(req, res)])
       .then(([file]) => {
