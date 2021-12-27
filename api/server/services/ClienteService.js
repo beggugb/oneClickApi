@@ -10,6 +10,14 @@ const { Cliente, Rol, Categoria, Paquete, Horario, Favorito } = database;
 
 class ClienteService {
 
+  static delete(datoId) {
+    return new Promise((resolve, reject) => {
+      Cliente.destroy({ where: { id: Number(datoId) } })
+        .then((rows) => resolve({ message: 'eliminado' }))
+        .catch((reason)  => reject({ message: reason.message }))      
+    });
+  }
+
   static getList(name) {
     return new Promise((resolve, reject) => {
       let iName = '%' + name + '%'
@@ -409,6 +417,7 @@ class ClienteService {
         video,
         direccion,
         descripcion,
+        slider1,
 	tipo,
 	icon
       } = dato;
@@ -438,6 +447,7 @@ class ClienteService {
           video: video,
           direccion: direccion,
           descripcion: descripcion,
+          slider1:slider1,
 	  tipo: tipo,
 		icon: icon
         },

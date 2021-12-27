@@ -92,6 +92,17 @@ class HorarioService {
     })
   }
 
+  static delec(clienteId) {
+    return new Promise((resolve, reject) => {
+      Horario
+        .destroy({
+          where: { clienteId: clienteId }
+        })
+        .then(Horario => resolve(Horario))
+        .catch(reason => reject(reason))
+    })
+  }
+
   static update(dato, datoId) {
     return new Promise((resolve, reject) => {
       Horario

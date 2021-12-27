@@ -19,7 +19,35 @@ const bcrypt = require("bcrypt-nodejs");
 
 class ClienteController {
 
-  
+  static delete(req, res) {  
+    SucursalService.getAlli(req.params.id)
+      .then((sucursales) => {        
+          sucursales.map((item)=>{
+            HorarioService.dele(item.id)
+            .then((io)=>{
+              
+            })
+            return;            
+          })
+          HorarioService.delec(req.params.id)
+          .then((xhorarios)=>{
+            SucursalService.dele(req.params.id)
+              .then((xsin)=>{
+                ClienteService.delete(req.params.id)
+                  .then(()=>{
+                    ClienteService.getData(1,12,'id','ASC')                
+                        .then((clientes) => {
+                          res.status(200).send({ message: "cliente", result: clientes });
+                      })
+                  })
+              })
+          })
+      })    
+      .catch((reason) => {
+        console.log(reason)
+        res.status(400).send({ message: reason });
+      });
+  }
 
   static listar(req, res) {
     ClienteService.getList(req.params.name)

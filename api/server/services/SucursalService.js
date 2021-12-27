@@ -7,6 +7,18 @@ const { Sucursal, Horario } = database;
 
 class SucursalService {
 
+  static dele(clienteId) {
+    return new Promise((resolve, reject) => {
+      Sucursal
+        .destroy({
+          where: { clienteId: clienteId }
+        })
+        .then(Sucursal => resolve(Sucursal))
+        .catch(reason => reject(reason))
+    })
+  }
+
+
   static getMapasCliente(clienteId) {
     return new Promise((resolve, reject) => {      
       Sucursal.findAll({                
@@ -80,6 +92,26 @@ class SucursalService {
         )
         .catch((reason) => reject(reason));
     });
+  }
+
+  static getAlli(cliente) {
+    return new Promise((resolve, reject) => {      
+      Sucursal
+        .findAll({
+          raw: true,
+          nest: true,          
+          order: [['id', 'ASC'],],          
+          where: { clienteId: { [Op.eq]: cliente } },
+          attributes: [
+            "id",
+            "nombre"
+          ],
+        })
+        .then(sucursales =>
+          resolve(sucursales))
+        .catch(reason => reject(reason))
+
+    })
   }
   static getAll(cliente) {
     return new Promise((resolve, reject) => {      

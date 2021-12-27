@@ -14,6 +14,7 @@ router.get("/search/:nombres", ClienteController.search);
 router.post("/", ClienteController.add);
 router.get('/items/:prop/:value', ClienteController.getItems);
 router.get('/listar/:name', ClienteController.listar);
+router.delete("/:id", ClienteController.delete);
 
 /*router.get("/vusername/:username", ClienteController.vusername);
 router.delete("/:id", ClienteController.deleteCliente);
