@@ -19,6 +19,50 @@ const bcrypt = require("bcrypt-nodejs");
 
 class ClienteController {
 
+  
+
+  static listar(req, res) {
+    ClienteService.getList(req.params.name)
+      .then((result) => {
+        res.status(200).send({ result })
+      })
+      .catch(reason => {
+        res.status(400).send({ 'message': reason })
+      })
+  }
+
+  static add(req, res) {        
+    if (req.body.email) {
+      const dato = req.body
+      dato.password = 'onclickbo'       
+      dato.username = dato.nombres     
+      dato.registrado = true      
+      ClienteService.add(dato)
+        .then((cliente) => {  
+          /*console.log(cliente.id)          */
+          let horas = Array()
+            for (let i = 1; i <= 7; i++) {
+              let date = {}
+                date.dia = i;
+                date.hinicio = '07:00:00'
+                date.hfin = '19:00:00'
+                date.clienteId = cliente.id
+                horas.push(date)
+            }
+            HorarioService.add(horas)
+            .then((horas) => {              
+              res.status(200).send({ message: "cliente", result: cliente });
+            })             
+        })
+        .catch((reason) => {         
+          console.log(reason) 
+          res.status(400).send({ message: reason });
+        });
+    } else {
+      res.status(400).send({ message: "datos faltantes" });
+    }
+  }
+
   static search(req, res) {                
     ClienteService.search(1, 12, req.params.nombres)
       .then((clientes) => {            
@@ -30,6 +74,16 @@ class ClienteController {
   }
   static actualizar(req, res) {    
     ClienteService.update(req.body, req.params.id)
+      .then((cliente) => {
+        res.status(200).send({ message: "cliente", result: cliente });
+      })
+      .catch((reason) => {
+        console.log(reason)
+        res.status(400).send({ message: reason });
+      });
+  }
+  static getItems(req, res) {    
+    ClienteService.getItems()
       .then((cliente) => {
         res.status(200).send({ message: "cliente", result: cliente });
       })
@@ -52,25 +106,16 @@ class ClienteController {
     if (req.params.id) {
     ClienteService.getId(req.params.id)
       .then((cliente) => {              
-          ContratoService.getItem(cliente.id)
-              .then((contrato) => {                    
-                NotaService.getNota(contrato.id)
-                  .then((nota) => {
-                    Promise.all([ 
-                      PlanService.getPlan(nota.id), 
-                      HorarioService.getHorariosc(cliente.id,"clienteId"),
-                      SucursalService.getAll(cliente.id)
-                    ])
-                      .then(([plan, horarios, sucursales]) => {                                
-                          res.status(200).send({ message: "cliente", cliente:  cliente  , 
-                          contrato:contrato, nota:nota, plan:plan, horarios:horarios, sucursales: sucursales });
-                        })
-                      })
-                    })                 
-        })
-        .catch((reason) => {
-          res.status(400).send({ message: reason });
-        });
+        Promise.all([           
+            HorarioService.getHorariosc(cliente.id,"clienteId"),
+            SucursalService.getAll(cliente.id)])
+              .then(([horarios, sucursales]) => {                                
+                res.status(200).send({ message: "cliente", cliente:  cliente, horarios:horarios, sucursales: sucursales });
+              })        
+      })
+      .catch((reason) => {
+         res.status(400).send({ message: reason });
+      });
     } else {
       res.status(400).send({ message: "datos faltantes" });
     }

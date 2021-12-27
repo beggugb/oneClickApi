@@ -34,7 +34,9 @@ class ConsultaController {
   }
 
   static getFavoritos(req, res) {
-    FavoritoService.getClientes(req.params.prop,req.params.value)
+    const d = new Date() 
+    var formatted = (new Date(d + 'UTC')).toISOString().replace(/-/g, '-').split('T')[0]  
+    FavoritoService.getClientes(req.params.prop,req.params.value,formatted)
       .then((data) => {            
         res.status(200).send({ message: "lista", result: data });
       })

@@ -10,6 +10,75 @@ const { Cliente, Rol, Categoria, Paquete, Horario, Favorito } = database;
 
 class ClienteService {
 
+  static getList(name) {
+    return new Promise((resolve, reject) => {
+      let iName = '%' + name + '%'
+      if (name === undefined || name === null || name === '0' || name === 0) { iName = '%' }
+      Cliente
+        .findAll({
+          row: true,
+          nest: true,
+          order: [['id', 'ASC'],],
+          where: { nombres: { [Op.iLike]: iName } },
+          attributes: ['id', ['id', 'value'], ['nombres', 'label']],
+        })
+        .then(Categorias =>
+          resolve(Categorias))
+        .catch(reason => reject(reason))
+
+    })
+  }
+
+  static getItems() {
+    return new Promise((resolve, reject) => {        
+      Cliente
+        .findAll({
+                row: true,
+                nest: true,
+                order: ['nombres'],        
+                attributes: ['id', ['id', 'value'], ['nombres', 'label']],
+            })
+            .then(Paquetes =>
+                resolve(Paquetes))
+            .catch(reason => reject(reason))
+
+    })
+}
+  static validarCliente(newUsuario) {    
+    if(newUsuario.nombres){
+        if(newUsuario.username){
+            if(newUsuario.email){
+                if(newUsuario.telefono){
+                  return true
+            } 
+          }
+        }
+    }
+    else {
+        return false
+  }}
+
+
+
+  static add(newUsuario) {            
+    return new Promise((resolve, reject) => {
+        if(this.validarCliente(newUsuario))
+        {
+            const cliente = newUsuario
+            cliente.password = bcrypt.hashSync(123456, bcrypt.genSaltSync(10), null);  
+            
+            Cliente.create(cliente)
+            .then((row) => resolve( row ))
+            .catch((reason) => {                            
+                reject({ message: reason.message, user: null, token: null })
+              });
+            
+        }else{                
+                reject({ message: "Datos faltantes", user: null, token: null })
+        }        
+   });
+  } 
+
   static getBancos() {
     return new Promise((resolve, reject) => {       
       Cliente.findAll({

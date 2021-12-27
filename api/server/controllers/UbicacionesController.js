@@ -12,6 +12,8 @@ class UbicacionesController {
             res.status(400).send({ message: reason });
           });
       }
+
+      
       
 }
 
